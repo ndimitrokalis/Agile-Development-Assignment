@@ -1,5 +1,5 @@
 ## To download the project from github:
-
+<pre>
 1. Shift + Right Click on the directory you want to save the project.
 2. Select "Open command window in here".
 3. git clone https://github.com/ndimitrokalis/Agile-Development-Assignment.git
@@ -18,3 +18,4 @@
    git add --all                 #To add everything.
 3. git commit -m "your message"  #To add a comment on your update.
 4. git push -u origin main       #To upload your changes.
+</pre>
