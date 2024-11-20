@@ -1,5 +1,6 @@
-from flask import Flask, render_template, request, redirect, session
-import sqlite3
+from flask import Flask, render_template, request, redirect
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import UserMixin, LoginManager, login_required, logout_user, login_user
 
 app = Flask(__name__)
 
@@ -25,7 +26,6 @@ def dashboard():
 
 @app.route("/logout")
 def logout():
-    session.clear()
     return redirect('/')
 
 if __name__ == '__main__':
