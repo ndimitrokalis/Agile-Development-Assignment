@@ -4,6 +4,9 @@ from flask_login import UserMixin, LoginManager, login_required, logout_user, lo
 
 app = Flask(__name__)
 
+login_manager = LoginManager()
+login_manager.init_app(app)
+
 @app.route("/")
 def home():
     return render_template('home.html')
@@ -53,7 +56,7 @@ def logout():
     logout_user()
     return redirect('/')
 
-@LoginManager.unauthorized_handler
+@login_manager.unauthorized_handler
 def unauthorized_callback():
     return redirect('/login')
 
