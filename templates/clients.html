@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Clients</title>
+</head>
+<body>
+    <h1>Clients</h1>
+    <a href="/clients/add">Add New Client</a>
+    <ul>
+        {% for client in clients %}
+        <li>
+            {{ client.name }} - {{ client.email }} - {{ client.phone }}
+            <a href="/clients/edit/{{ client.id }}">Edit</a>
+            <form action="/clients/delete/{{ client.id }}" method="post" style="display:inline;">
+                <button type="submit">Delete</button>
+            </form>
+        </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
