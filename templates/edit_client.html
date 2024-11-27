@@ -1,11 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Client</title>
-</head>
-<body>
+{% extends 'dashboard.html' %}
+
+{% block title %}Edit Client{% endblock %}
+
+{% block content %}
     <h1>Edit Client</h1>
     <form action="/clients/edit/{{ client.id }}" method="POST">
         <label for="name">Name:</label><br>
@@ -22,6 +19,4 @@
 
         <button type="submit">Update Client</button>
     </form>
-    <a href="/clients">Back to Client List</a>
-</body>
-</html>
+{% endblock %}

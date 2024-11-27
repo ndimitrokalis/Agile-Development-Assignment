@@ -91,10 +91,10 @@
         
         <div class="sidebar">
             <h2 style="text-align: center; color: #fff;">Admin </h2>
-            <a href="...">Dashboard</a>
-            <a href="...">Add client</a>
-            <a href="...">Edit client</a>
-            <a href="...">Delete client</a>
+            <a href="/clients">Dashboard</a>
+            <a href="/clients/add">Add client</a>
+            <a href="/clients/edit">Edit client</a>
+            <a href="clients/delete">Delete client</a>
             <a href="/logout">Logout</a>
         </div>
 
@@ -108,25 +108,23 @@
                 </div>
             </div>
 
-            
             <div class="cards">
                 <div class="card">
-                    <h3>Total clients</h3>
+                    <h3>Clients</h3>
                     <p>1.300</p>
                 </div>
                 <div class="card">
-                    <h3>xxx</h3>
+                    <h3>Consultants</h3>
                     <p>....</p>
                 </div>
                 <div class="card">
-                    <h3>xxx</h3>
+                    <h3>Admins</h3>
                     <p>....</p>
                 </div>
             </div>
 
-            
             <div>
-                
+                {% block content %}{% endblock %}
             </div>
         </div>
     </div>

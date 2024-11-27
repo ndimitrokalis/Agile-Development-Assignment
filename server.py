@@ -5,7 +5,6 @@ from flask_login import UserMixin, LoginManager, login_required, logout_user, lo
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = 'your_secret_key_here'
-
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -37,17 +36,23 @@ def home():
 @app.route("/login", methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        username = request.form.get('username')
+        email = request.form.get('email')
         password = request.form.get('password')
-        user = User.query.filter_by(username=username).first()
+        user = User.query.filter_by(email=email).first()
         if user and user.password == password:
             login_user(user)
-            return redirect('/profile')
+            if current_user.role != 'admin':
+                return redirect('/profile')
+            else:
+                return redirect('/dashboard')
         else:
             return redirect('/login')
     else:
         return render_template('login.html')
 
+@app.route("/password/recovery", methods=['GET', 'POST'])
+def password_recovery():
+    return render_template('password_recovery.html')
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -99,7 +104,7 @@ def add_client():
         try:
             db.session.add(new_client)
             db.session.commit()
-            return redirect('/clients')
+            return redirect('/dashboard')
         except Exception as e:
             print(f"Error: {e}")
             return redirect('/clients/add')
@@ -151,6 +156,8 @@ def profile():
 @app.route("/dashboard")
 @login_required
 def dashboard():
+    if current_user.role != 'admin':
+        return "Unauthorized", 403
     return render_template('dashboard.html')
 
 @app.route("/logout")
@@ -165,4 +172,4 @@ def unauthorized_callback():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run()
+    app.run(debug=True)

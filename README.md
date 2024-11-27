@@ -12,13 +12,16 @@
 4. pip install -r requirements.txt  #To install all the necessary libraries.
 5. python server.py                 #To start the program.
 </pre>
-## To upload your changes to github:
+## To associate your changes with your GitHub account:
 <pre>
 1. git config --global user.name "Your Account Name"
 2. git config --global user.email "your_email@example.com"
-3. git pull                         #To get the latest updates of the project.
-4. git add "the file's name"        #To add a single file at a time.
+</pre>
+## To upload your changes to github:
+<pre>
+1. git pull                         #To get the latest updates of the project.
+2. git add "the file's name"        #To add a single file at a time.
    git add --all                    #To add everything.
-5. git commit -m "your message"     #To add a comment on your update.
-6. git push -u origin main          #To upload your changes.
+3. git commit -m "your message"     #To add a comment on your update.
+4. git push -u origin main          #To upload your changes.
 </pre>
