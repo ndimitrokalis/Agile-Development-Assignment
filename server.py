@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, LoginManager, login_required, logout_user, login_user, current_user
+from werkzeug.security import generate_password_hash, check_password_hash 
 
 app = Flask(__name__)
 
@@ -39,14 +40,15 @@ def login():
         email = request.form.get('email')
         password = request.form.get('password')
         user = User.query.filter_by(email=email).first()
-        if user and user.password == password:
+
+        if user and check_password_hash(user.password, password):
             login_user(user)
             if current_user.role != 'admin':
                 return redirect('/profile')
             else:
                 return redirect('/dashboard')
         else:
-            return redirect('/login')
+            return redirect('/login') 
     else:
         return render_template('login.html')
 
@@ -69,9 +71,11 @@ def register_user():
         confirm_password = request.form.get('confirm_password')
         
         if password != confirm_password:
-            return redirect('/register')  
+            return redirect('/register') 
         
-        user = User(fullname=fullname, username=username, email=email, phone=phone, password=password)
+        hashed_password = generate_password_hash(password, method='pbkdf2:sha256', salt_length=16)     
+        
+        user = User(fullname=fullname, username=username, email=email, phone=phone, password=hashed_password)
         try:
             db.session.add(user)
             db.session.commit()
@@ -80,6 +84,8 @@ def register_user():
             print(f"Error: {e}")
             return redirect('/register')  # Handle duplicate entry or other errors
     return render_template('register.html')
+
+
 
 # Admin-Only
 @app.route("/clients")
@@ -172,4 +178,4 @@ def unauthorized_callback():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(debug=True)
+    app.run()
