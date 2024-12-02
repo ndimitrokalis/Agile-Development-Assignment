@@ -55,7 +55,6 @@
             font-size: 1.5rem;
         }
 
-        
         .cards {
             display: flex;
             justify-content: space-between;
@@ -81,8 +80,6 @@
             color: #666;
         }
 
-        
-
     </style>
 </head>
 <body>
@@ -91,11 +88,10 @@
         
         <div class="sidebar">
             <h2 style="text-align: center; color: #fff;">Admin </h2>
-            <a href="./add_client.html">Add client</a>
-            <a href="./edit_client_form.html">Edit client</a>
-            <a href="./home.html">Logout</a>
+            <a href="/clients/add">Add client</a>
+            <a href="/client/edit/form">Edit client</a>
+            <a href="/">Logout</a>
         </div>
-
         
         <div class="main-content">
             
@@ -107,29 +103,25 @@
             </div>
 
             <div class="cards">
-                <a href="./clients_list.html" class="card">
+                <a href="/clients_list" class="card">
                     <h3>Clients</h3>
                    
                 </a>
-                <a href="./consultants_list.html" class="card">
+                <a href="/consultants_list" class="card">
                     <h3>Consultants</h3>
                     
                 </a>
-                <a href="./Admins_list.html" class="card">
+                <a href="/Admins_list" class="card">
                     <h3>Admins</h3>
                     
                 </a>
             </div>
-            
-            </div>
 
             <div>
-                
+                {% block content %}{% endblock %}
             </div>
+
         </div>
     </div>
-
-    
-
 </body>
 </html>

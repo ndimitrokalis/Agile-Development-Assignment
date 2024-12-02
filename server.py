@@ -85,8 +85,6 @@ def register_user():
             return redirect('/register')  # Handle duplicate entry or other errors
     return render_template('register.html')
 
-
-
 # Admin-Only
 @app.route("/clients")
 @login_required
@@ -178,4 +176,4 @@ def unauthorized_callback():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run()
+    app.run(debug=True)
