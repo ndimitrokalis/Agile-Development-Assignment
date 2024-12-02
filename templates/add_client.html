@@ -3,21 +3,41 @@
 {% block title %}Add Client{% endblock %}
 
 {% block content %}
-    <h1>Add Client</h1>
+<h1>Add Client</h1>
 
     <form method="post" action="/clients/add">
-        <label for="name">Name:</label><br>
-        <input type="text" id="name" name="name" placeholder="Client Name" required><br><br>
+        <label for="name">Company Name:</label><br>
+        <input type="text" id="name" name="name" placeholder="Name" required><br><br>
 
-        <label for="email">Email:</label><br>
-        <input type="email" id="email" name="email" placeholder="Client Email" required><br><br>
+        <label for="email"> Email:</label><br>
+        <input type="email" id="email" name="email" placeholder="Email" required><br><br>
 
         <label for="phone">Phone:</label><br>
-        <input type="tel" id="phone" name="phone" placeholder="Client Phone" pattern="^[0-9]{10}$" required><br><br>
+        
+        <input type="tel" id="phone" name="phone" placeholder="Phone" pattern="^[0-9]{10}$" required><br><br>
 
         <label for="address">Address:</label><br>
-        <input type="text" id="address" name="address" placeholder="Client Address"><br><br>
+        <input type="text" id="address" name="address" placeholder="Address"><br><br>
 
+    
+    <label for="ssn">Social Security Number (SSN):</label><br>
+    <input type="text" id="ssn" name="ssn" placeholder="SSN" pattern="^\d{3}-\d{2}-\d{4}$" required><br><br>
+
+   
+    <label for="postalcode">Postal Code:</label><br>
+    <input type="text" id="postalcode" name="postalcode" placeholder="Postal Code" pattern="^\d{5}(-\d{4})?$" required><br><br>
+
+
+    
+    <h1>Add Notes</h1>
+
+    <form method="post" action="/notes/add">
+        <label for="notes">Notes:</label><br>
+        <textarea id="notes" name="notes" placeholder="Enter notes about the client" rows="15" cols="50"></textarea><br><br>
+    
+        <button type="submit">Submit Notes</button>
+    </form>
+    
         <button type="submit">Add Client</button>
     </form>
-{% endblock %}
+    {% endblock %}

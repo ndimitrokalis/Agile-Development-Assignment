@@ -91,11 +91,9 @@
         
         <div class="sidebar">
             <h2 style="text-align: center; color: #fff;">Admin </h2>
-            <a href="/clients">Dashboard</a>
-            <a href="/clients/add">Add client</a>
-            <a href="/clients/edit">Edit client</a>
-            <a href="clients/delete">Delete client</a>
-            <a href="/logout">Logout</a>
+            <a href="./add_client.html">Add client</a>
+            <a href="./edit_client_form.html">Edit client</a>
+            <a href="./home.html">Logout</a>
         </div>
 
         
@@ -109,22 +107,24 @@
             </div>
 
             <div class="cards">
-                <div class="card">
+                <a href="./clients_list.html" class="card">
                     <h3>Clients</h3>
-                    <p>1.300</p>
-                </div>
-                <div class="card">
+                   
+                </a>
+                <a href="./consultants_list.html" class="card">
                     <h3>Consultants</h3>
-                    <p>....</p>
-                </div>
-                <div class="card">
+                    
+                </a>
+                <a href="./Admins_list.html" class="card">
                     <h3>Admins</h3>
-                    <p>....</p>
-                </div>
+                    
+                </a>
+            </div>
+            
             </div>
 
             <div>
-                {% block content %}{% endblock %}
+                
             </div>
         </div>
     </div>
