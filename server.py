@@ -29,6 +29,8 @@ class Client(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     phone = db.Column(db.String(10), unique=True, nullable=False)
     address = db.Column(db.String(200), nullable=True)
+    ssn = db.Column(db.String(11), unique=True, nullable=False)
+    postalcode = db.Column(db.String(10), nullable=True)
 
 @app.route("/")
 def home():
@@ -104,7 +106,9 @@ def add_client():
         email = request.form.get('email')
         phone = request.form.get('phone')
         address = request.form.get('address')
-        new_client = Client(name=name, email=email, phone=phone, address=address)
+        ssn = request.form.get("ssn")
+        postalcode = request.form.get("postalcode")
+        new_client = Client(name=name, email=email, phone=phone, address=address, ssn=ssn, postalcode=postalcode)
         try:
             db.session.add(new_client)
             db.session.commit()
@@ -150,7 +154,26 @@ def delete_client(client_id):
     except Exception as e:
         print(f"Error: {e}")
         return "An error occurred while deleting the client", 500
+    
+@app.route("/clients/edit/form")
+@login_required
+def edit_client_form():
+    return render_template('edit_client_form.html')     
 
+@app.route("/admin/list")
+@login_required
+def admin_list():
+    return render_template('admins_list.html')
+
+@app.route("/clients/list")
+@login_required
+def clients_list():
+    return render_template('clients_list.html')
+
+@app.route("/consultants/list")
+@login_required
+def consultants_list():
+    return render_template('consultants_list.html')
 
 @app.route("/profile")
 @login_required
