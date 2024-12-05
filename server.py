@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, LoginManager, login_required, logout_user, login_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash 
@@ -31,6 +31,7 @@ class Client(db.Model):
     address = db.Column(db.String(200), nullable=True)
     ssn = db.Column(db.String(11), unique=True, nullable=False)
     postalcode = db.Column(db.String(10), nullable=True)
+    notes = db.Column(db.String(500), nullable=True)
 
 @app.route("/")
 def home():
@@ -50,12 +51,20 @@ def login():
             else:
                 return redirect('/dashboard')
         else:
+            flash("Invalid username or password")
             return redirect('/login') 
     else:
         return render_template('login.html')
 
 @app.route("/password/recovery", methods=['GET', 'POST'])
 def password_recovery():
+    if request.method =='POST':
+        email = request.form.get('email')
+        user = User.query.filter_by(email=email).first()
+        if user:
+            return redirect('/')
+        else:
+            flash("The email address you entered does not exist")
     return render_template('password_recovery.html')
 
 @login_manager.user_loader
@@ -73,7 +82,8 @@ def register_user():
         confirm_password = request.form.get('confirm_password')
         
         if password != confirm_password:
-            return redirect('/register') 
+            flash("Passwords do not match")
+            return redirect('/register')
         
         hashed_password = generate_password_hash(password, method='pbkdf2:sha256', salt_length=16)     
         
@@ -99,8 +109,8 @@ def add_client():
         address = request.form.get('address')
         ssn = request.form.get("ssn")
         postalcode = request.form.get("postalcode")
-        print(name,email,phone,address,ssn,postalcode)
-        new_client = Client(name=name, email=email, phone=phone, address=address, ssn=ssn, postalcode=postalcode)
+        notes = request.form.get("notes")
+        new_client = Client(name=name, email=email, phone=phone, address=address, ssn=ssn, postalcode=postalcode, notes=notes)
         try:
             db.session.add(new_client)
             db.session.commit()
@@ -124,7 +134,6 @@ def edit_client_form(client_id):
     if current_user.role != 'admin':
         return "Unauthorized", 403
     client = Client.query.get(client_id)
-    print(request.method)
     if not client:
         return "Client not found", 404
     if request.method == 'POST':
@@ -134,12 +143,13 @@ def edit_client_form(client_id):
         client.address = request.form.get('address')
         client.ssn = request.form.get('ssn')
         client.postalcode = request.form.get('postalcode')
+        client.notes = request.form.get('notes')
         try:
             db.session.commit()
             return redirect('/clients/edit')
         except Exception as e:
             print(f"Error: {e}")
-            return redirect(f'/clients/edit/{client_id}')
+            return redirect(f'/clients/edit/form/{client_id}')
     return render_template('edit_client_form.html', client=client)
 
 @app.route("/clients/delete/<int:client_id>", methods=['POST'])

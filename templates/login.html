@@ -27,9 +27,17 @@
             </div>
         </form>
 
-        <div id="error-message">
-            <p>Invalid username or password</p>
-        </div>
+        {% with messages = get_flashed_messages(with_categories=True) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
 
         <div>
             <a href="/password/recovery">Forgot Password?</a>
