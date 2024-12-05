@@ -4,19 +4,15 @@
 
 {% block content %}
     <h1>Edit Client</h1>
-    <form action="/clients/edit/{{ client.id }}" method="POST">
-        <label for="name">Name:</label><br>
-        <input type="text" id="name" name="name" value="{{ client.name }}" required><br><br>
-
-        <label for="email">Email:</label><br>
-        <input type="email" id="email" name="email" value="{{ client.email }}" required><br><br>
-
-        <label for="phone">Phone:</label><br>
-        <input type="tel" id="phone" name="phone" value="{{ client.phone }}" pattern="^[0-9]{10}$" required><br><br>
-
-        <label for="address">Address:</label><br>
-        <input type="text" id="address" name="address" value="{{ client.address }}"><br><br>
-
-        <button type="submit">Update Client</button>
-    </form>
+    <ul>
+        {% for client in clients %}
+        <li>
+            {{ client.name }} - {{ client.email }} - {{ client.phone }}
+            <a href="/clients/edit/form/{{ client.id }}">Edit</a>
+            <form action="/clients/delete/{{ client.id }}" method="post" style="display:inline;">
+                <button type="submit">Delete</button>
+            </form>
+        </li>
+        {% endfor %}
+    </ul>
 {% endblock %}

@@ -30,7 +30,6 @@
         <input type="text" id="postalcode" name="postalcode" placeholder="Postal Code" pattern="^\d{5}(-\d{4})?$" required readonly>
         <button type="button" onclick="editField('postalcode')">Edit</button><br><br>
 
-        <button type="submit">Add Client</button>
     </form>
 
     <h1>Add Notes</h1>
@@ -38,8 +37,7 @@
     <form method="post" action="/notes/add">
         <label for="notes">Notes:</label><br>
         <textarea id="notes" name="notes" placeholder="Enter notes about the client" rows="15" cols="50" readonly></textarea><br><br>
-        <button type="button" onclick="editField('notes')">Edit Notes</button><br><br>
-        <button type="submit">Submit Notes</button>
+        <button type="submit">Submit</button>
     </form>
 
 

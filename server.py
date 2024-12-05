@@ -87,15 +87,6 @@ def register_user():
             return redirect('/register')  # Handle duplicate entry or other errors
     return render_template('register.html')
 
-# Admin-Only
-@app.route("/clients")
-@login_required
-def clients():
-    if current_user.role != 'admin':
-        return "Unauthorized", 403
-    all_clients = Client.query.all()
-    return render_template('clients.html', clients=all_clients)
-
 @app.route("/clients/add", methods=['GET', 'POST'])
 @login_required
 def add_client():
@@ -108,6 +99,7 @@ def add_client():
         address = request.form.get('address')
         ssn = request.form.get("ssn")
         postalcode = request.form.get("postalcode")
+        print(name,email,phone,address,ssn,postalcode)
         new_client = Client(name=name, email=email, phone=phone, address=address, ssn=ssn, postalcode=postalcode)
         try:
             db.session.add(new_client)
@@ -118,12 +110,21 @@ def add_client():
             return redirect('/clients/add')
     return render_template('add_client.html')
 
-@app.route("/clients/edit/<int:client_id>", methods=['GET', 'POST'])
+@app.route("/clients/edit")
 @login_required
-def edit_client(client_id):
+def edit_client():
+    if current_user.role != 'admin':
+        return "Unauthorized", 403
+    all_clients = Client.query.all()
+    return render_template('edit_client.html', clients=all_clients)
+
+@app.route("/clients/edit/form/<int:client_id>", methods=['GET', 'POST'])
+@login_required
+def edit_client_form(client_id):
     if current_user.role != 'admin':
         return "Unauthorized", 403
     client = Client.query.get(client_id)
+    print(request.method)
     if not client:
         return "Client not found", 404
     if request.method == 'POST':
@@ -131,13 +132,15 @@ def edit_client(client_id):
         client.email = request.form.get('email')
         client.phone = request.form.get('phone')
         client.address = request.form.get('address')
+        client.ssn = request.form.get('ssn')
+        client.postalcode = request.form.get('postalcode')
         try:
             db.session.commit()
-            return redirect('/clients')
+            return redirect('/clients/edit')
         except Exception as e:
             print(f"Error: {e}")
             return redirect(f'/clients/edit/{client_id}')
-    return render_template('edit_client.html', client=client)
+    return render_template('edit_client_form.html', client=client)
 
 @app.route("/clients/delete/<int:client_id>", methods=['POST'])
 @login_required
@@ -150,17 +153,12 @@ def delete_client(client_id):
     try:
         db.session.delete(client)
         db.session.commit()
-        return redirect('/clients')
+        return redirect('/clients/edit')
     except Exception as e:
         print(f"Error: {e}")
-        return "An error occurred while deleting the client", 500
-    
-@app.route("/clients/edit/form")
-@login_required
-def edit_client_form():
-    return render_template('edit_client_form.html')     
+        return "An error occurred while deleting the client", 500 
 
-@app.route("/admin/list")
+@app.route("/admins/list")
 @login_required
 def admin_list():
     return render_template('admins_list.html')
