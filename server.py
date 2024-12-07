@@ -22,16 +22,19 @@ class User(UserMixin, db.Model):
     phone = db.Column(db.String(10), unique=True, nullable=False)
     password = db.Column(db.String(200), nullable=False)
     role = db.Column(db.String(20), nullable=False, default='consultant')
+    clients = db.relationship('Client', back_populates='consultant')
 
 class Client(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(150), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     phone = db.Column(db.String(10), unique=True, nullable=False)
-    address = db.Column(db.String(200), nullable=True)
+    address = db.Column(db.String(200), nullable=False)
     ssn = db.Column(db.String(11), unique=True, nullable=False)
-    postalcode = db.Column(db.String(10), nullable=True)
+    postalcode = db.Column(db.String(10), nullable=False)
     notes = db.Column(db.String(500), nullable=True)
+    consultant_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+    consultant = db.relationship('User', back_populates='clients')
 
 @app.route("/")
 def home():
@@ -144,6 +147,7 @@ def edit_client_form(client_id):
         client.ssn = request.form.get('ssn')
         client.postalcode = request.form.get('postalcode')
         client.notes = request.form.get('notes')
+        client.consultant_id = request.form.get('consultant')
         try:
             db.session.commit()
             return redirect('/clients/edit')
