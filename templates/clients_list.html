@@ -7,7 +7,7 @@
     <ul>
         {% for client in clients %}
         <li>
-            {{ client.id }} - {{ client.name }} - {{ client.email }} - {{ client.phone }} - {{ client.address }} - {{ client.ssn }} - {{ client.postalcode }} - {{ client.notes }}
+            {{ client.id }} - {{ client.name }} - {{ client.email }} - {{ client.phone }} - {{ client.address }} - {{ client.ssn }} - {{ client.postalcode }} - {{ client.notes }} - {{ client.consultant_id }}
         </li>
         {% endfor %}
     </ul>

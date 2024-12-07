@@ -24,6 +24,9 @@
         <label for="postalcode">Postal Code:</label><br>
         <input type="text" id="postalcode" name="postalcode" placeholder="Postal Code" pattern="^\d{5}(-\d{4})?$" value="{{ client.postalcode }}" required><br><br>
 
+        <label for="consultant">Handled By:</label><br>
+        <input type="number" id="consultant" name="consultant" placeholder="Consultant's ID" value="{{ client.consultant_id }}" step="1"><br><br>
+
         <h1>Add Notes</h1>
 
         <label for="notes">Notes:</label><br>
