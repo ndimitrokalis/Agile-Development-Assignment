@@ -1,0 +1,14 @@
+{% extends 'dashboard.html' %}
+
+{% block title %}Consultants List{% endblock %}
+
+{% block content %}
+    <h1>Consultants</h1>
+    <ul>
+        {% for consultant in consultants %}
+        <li>
+            {{ consultant.id }} - {{ consultant.fullname }} - {{ consultant.username }} - {{ consultant.email }} - {{ consultant.phone }}
+        </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

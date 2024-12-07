@@ -1,0 +1,14 @@
+{% extends 'dashboard.html' %}
+
+{% block title %}Admins List{% endblock %}
+
+{% block content %}
+    <h1>Admins</h1>
+    <ul>
+        {% for admin in admins %}
+        <li>
+            {{ admin.id }} - {{ admin.fullname }} - {{ admin.username }} - {{ admin.email }} - {{ admin.phone }}
+        </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

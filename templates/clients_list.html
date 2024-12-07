@@ -1,0 +1,14 @@
+{% extends 'dashboard.html' %}
+
+{% block title %}Clients List{% endblock %}
+
+{% block content %}
+    <h1>Clients</h1>
+    <ul>
+        {% for client in clients %}
+        <li>
+            {{ client.id }} - {{ client.name }} - {{ client.email }} - {{ client.phone }} - {{ client.address }} - {{ client.ssn }} - {{ client.postalcode }} - {{ client.notes }}
+        </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

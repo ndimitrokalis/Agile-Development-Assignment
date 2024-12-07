@@ -25,6 +25,9 @@
         <label for="postalcode">Postal Code:</label><br>
         <input type="text" id="postalcode" name="postalcode" placeholder="00000-0000" pattern="^\d{5}(-\d{4})?$" required><br><br>
 
+        <label for="notes">Notes:</label><br>
+        <textarea id="notes" name="notes" placeholder="Enter notes about the client" rows="15" cols="50">{{ client.notes }}</textarea><br><br>
+
         <h1>Add Notes</h1>
 
         <label for="notes">Notes:</label><br>
