@@ -171,17 +171,20 @@ def delete_client(client_id):
 @app.route("/admins/list")
 @login_required
 def admin_list():
-    return render_template('admins_list.html')
+    all_admins = User.query.filter_by(role='admin').all()
+    return render_template('admins_list.html', admins=all_admins)
 
 @app.route("/clients/list")
 @login_required
 def clients_list():
-    return render_template('clients_list.html')
+    all_clients = Client.query.all()
+    return render_template('clients_list.html', clients=all_clients)
 
 @app.route("/consultants/list")
 @login_required
 def consultants_list():
-    return render_template('consultants_list.html')
+    all_consultants = User.query.filter_by(role='consultant').all()
+    return render_template('consultants_list.html', consultants=all_consultants)
 
 @app.route("/profile")
 @login_required
