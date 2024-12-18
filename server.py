@@ -131,6 +131,31 @@ def edit_client():
     all_clients = Client.query.all()
     return render_template('edit_client.html', clients=all_clients)
 
+@app.route('/active/projects')
+@login_required
+def active_projects():
+    return render_template('active_projects.html')
+
+@app.route('/add/project')
+@login_required
+def add_project():
+    return render_template('add_project.html')
+
+@app.route('/add/task')
+@login_required
+def add_task():
+    return render_template('add_task.html')
+
+@app.route('/completed/projects')
+@login_required
+def completed_projects():
+    return render_template('completed_projects.html')
+
+@app.route('/manage/project')
+@login_required
+def manage_projects():
+    return render_template('manage_projects.html')
+
 @app.route("/clients/edit/form/<int:client_id>", methods=['GET', 'POST'])
 @login_required
 def edit_client_form(client_id):
