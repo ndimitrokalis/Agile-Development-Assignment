@@ -36,6 +36,15 @@ class Client(db.Model):
     consultant_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     consultant = db.relationship('User', back_populates='clients')
 
+class Project(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(150), nullable=False)
+    deadline = db.Column(db.Date, nullable=True)
+    consultant_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+    description = db.Column(db.String(500), nullable=True)
+    completed = db.Column(db.Boolean, default=False, nullable=False)
+
+
 @app.route("/")
 def home():
     return render_template('home.html')
@@ -131,11 +140,6 @@ def edit_client():
     all_clients = Client.query.all()
     return render_template('edit_client.html', clients=all_clients)
 
-@app.route('/active/projects')
-@login_required
-def active_projects():
-    return render_template('active_projects.html')
-
 @app.route('/add/project')
 @login_required
 def add_project():
@@ -145,11 +149,6 @@ def add_project():
 @login_required
 def add_task():
     return render_template('add_task.html')
-
-@app.route('/completed/projects')
-@login_required
-def completed_projects():
-    return render_template('completed_projects.html')
 
 @app.route('/manage/project')
 @login_required
@@ -197,23 +196,38 @@ def delete_client(client_id):
         print(f"Error: {e}")
         return "An error occurred while deleting the client", 500 
 
-@app.route("/admins/list")
-@login_required
-def admin_list():
-    all_admins = User.query.filter_by(role='admin').all()
-    return render_template('admins_list.html', admins=all_admins)
-
 @app.route("/clients/list")
 @login_required
 def clients_list():
     all_clients = Client.query.all()
-    return render_template('clients_list.html', clients=all_clients)
+    total_clients = Client.query.count()
+    return render_template('clients_list.html', clients=all_clients, total_clients=total_clients)
 
 @app.route("/consultants/list")
 @login_required
 def consultants_list():
     all_consultants = User.query.filter_by(role='consultant').all()
-    return render_template('consultants_list.html', consultants=all_consultants)
+    total_consultants = User.query.filter_by(role='consultant').count()
+    return render_template('consultants_list.html', consultants=all_consultants, total_consultants=total_consultants)
+
+@app.route("/admins/list")
+@login_required
+def admin_list():
+    all_admins = User.query.filter_by(role='admin').all()
+    total_admins = User.query.filter_by(role='admin').count()
+    return render_template('admins_list.html', admins=all_admins, total_admins=total_admins)
+
+@app.route('/active/projects/list')
+@login_required
+def active_projects():
+    total_active_projects = Project.query.filter_by(completed=False).count()
+    return render_template('active_projects_list.html', total_active_projects=total_active_projects)
+
+@app.route('/completed/projects/list')
+@login_required
+def completed_projects():
+    total_completed_projects = Project.query.filter_by(completed=True).count()
+    return render_template('completed_projects_list.html', total_completed_projects=total_completed_projects)
 
 @app.route("/profile")
 @login_required
