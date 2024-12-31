@@ -5,33 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
     <style>
-        /* Main container for sidebar and content */
-        .container {
-            display: flex;
-            min-height: 100vh;
-        }
+        
+/*  container */
+.container {
+    display: flex;
+    min-height: 100vh;
+}
 
-        /* Sidebar styling */
+        /* Sidebar */
         .sidebar {
             width: 250px;
             background-color: #debfbf;
-            color: #fff;
+            color: #eb9494;
             padding-top: 20px;
-            height: 100%;
             position: fixed;
+            height: 100%;
         }
 
         .sidebar a {
             display: block;
-            padding: 10px 20px;
+            padding: 15px;
             color: #575252;
             text-decoration: none;
             margin: 10px 0;
         }
 
         .sidebar a:hover {
-            background-color: #575252;
-            color: #fff;
+            background-color: #454242;
         }
 
         /* Main content area */
@@ -41,58 +41,47 @@
             width: 100%;
         }
 
+        /* Header */
         .header {
-            background-color: #000;
-            color: #fff;
-            padding: 15px;
-            text-align: center;
-            font-size: 1.5rem;
-        }
-
-        /* Cards container */
-        .cards {
-            margin-top: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        /* Individual card style */
-        .card {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            background-color: #070707;
+            padding: 15px;
+            color: rgb(248, 242, 242);
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+        }
+
+        .cards {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .card {
             background-color: #f4f4f4;
             padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            flex: 1;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-decoration: none;
+            color: black;
         }
 
         .card h3 {
-            margin: 0;
-            font-size: 1.2rem;
+            margin-bottom: 10px;
             color: #c28c8c;
         }
 
-        /* Button styling */
-        .card .button {
-            width: 30px;
-            height: 30px;
-            display: inline-flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #575252;
-            color: #fff;
-            border: none;
-            border-radius: 50%;
-            cursor: pointer;
-            text-decoration: none;
-            font-size: 14px;
+        .card p {
+            font-size: 16px;
+            color: #666;
         }
 
-        .card .button:hover {
-            background-color: #454242;
-        }
     </style>
 </head>
 <body>
@@ -100,38 +89,50 @@
     <div class="container">
         
         <div class="sidebar">
-            <h2 style="text-align: center;">Admin</h2>
-            <a href="/clients/add">Add Client</a>
-            <a href="/clients/edit">Edit Client</a>
-            <a href="/logout">Logout</a>
+            <h2 style="text-align: center; color: #fff;">Admin </h2>
+            <a href="/dashboard">Dashboard</a>
+            <a href="/clients/add">Add client</a>
+            <a href="/clients/edit">Edit client</a>
+            <a href="/">Logout</a>
         </div>
-        
         
         <div class="main-content">
             
             <div class="header">
-                Admin Dashboard
+                <h1> Admin Dashboard</h1>
+                <div>
+                    
+                </div>
             </div>
 
-            
             <div class="cards">
-                <div class="card">
+                <a href="/clients/list" class="card">
                     <h3>Clients</h3>
-                    <a href="/clients/list" class="button">+</a>
-                </div>
-                <div class="card">
+                    <p class="count">{{ total_clients }}</p>
+                </a>
+                <a href="/consultants/list" class="card">
                     <h3>Consultants</h3>
-                    <a href="/consultants/list" class="button">+</a>
-                </div>
-
-                <div class="card">
+                    <p class="count">{{ total_consultants }}</p>
+                </a>
+                <a href="/admins/list" class="card">
                     <h3>Admins</h3>
-                    <a href="/admins/list" class="button">+</a>
-                </div>
+                    <p class="count">{{ total_admins }}</p>
+                </a>
+                <a href="/projects/active" class="card">
+                    <h3>Active Projects</h3>
+                    <p class="count">{{ total_active_projects }}</p>
+                </a>
+                <a href="/projects/completed" class="card">
+                    <h3>Completed Projects</h3>
+                    <p class="count">{{ total_completed_projects }}</p>
+                </a>
+            </div>
+
+            <div>
+                {% block content %}{% endblock %}
             </div>
 
         </div>
     </div>
-
 </body>
 </html>
