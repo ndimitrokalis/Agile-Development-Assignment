@@ -5,31 +5,109 @@
 {% block content %}
 <h1>Add Client</h1>
 
-    <form method="post" action="/clients/add">
-        <label for="name">Company Name:</label><br>
-        <input type="text" id="name" name="name" placeholder="Name" required><br><br>
+<form method="post" action="/clients/add">
+    <label for="name">Company Name:</label><br>
+    <input type="text" id="name" name="name" placeholder="Company Name" required><br><br>
 
-        <label for="email"> Email:</label><br>
-        <input type="email" id="email" name="email" placeholder="Email" required><br><br>
+    <label for="email">Email:</label><br>
+    <input type="email" id="email" name="email" placeholder="Email" required><br><br>
 
-        <label for="phone">Phone:</label><br>
-        
-        <input type="tel" id="phone" name="phone" placeholder="Phone" pattern="^[0-9]{10}$" required><br><br>
+    <label for="phone">Phone:</label><br>
+    <input type="tel" id="phone" name="phone" placeholder="Phone" pattern="^[0-9]{10}$" required><br><br>
 
-        <label for="address">Address:</label><br>
-        <input type="text" id="address" name="address" placeholder="Address"><br><br>
+    <label for="address">Address:</label><br>
+    <input type="text" id="address" name="address" placeholder="Address"><br><br>
 
-        <label for="ssn">Social Security Number (SSN):</label><br>
-        <input type="text" id="ssn" name="ssn" placeholder="000-00-0000" pattern="^\d{3}-\d{2}-\d{4}$" required><br><br>
+    <label for="ssn">Social Security Number (SSN):</label><br>
+    <input type="text" id="ssn" name="ssn" placeholder="000-00-0000" pattern="^\d{3}-\d{2}-\d{4}$" required><br><br>
 
-        <label for="postalcode">Postal Code:</label><br>
-        <input type="text" id="postalcode" name="postalcode" placeholder="00000-0000" pattern="^\d{5}(-\d{4})?$" required><br><br>
+    <label for="postalcode">Postal Code:</label><br>
+    <input type="text" id="postalcode" name="postalcode" placeholder="00000-0000" pattern="^\d{5}(-\d{4})?$" required><br><br>
 
-        <h1>Add Notes</h1>
+    <h2>Add Notes</h2>
 
-        <label for="notes">Notes:</label><br>
-        <textarea id="notes" name="notes" placeholder="Enter notes about the client" rows="15" cols="50"></textarea><br><br>
-    
-        <button type="submit">Add Client</button>
-    </form>
-    {% endblock %}
+    <label for="notes">Notes:</label><br>
+    <textarea id="notes" name="notes" placeholder="Enter notes about the client" rows="10" cols="50"></textarea><br><br>
+
+    <button type="submit">Add Client</button>
+</form>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+        color: #333;
+    }
+
+    header {
+        background-color: #0c0c0c;
+        color: white;
+        padding: 15px;
+        text-align: center;
+    }
+
+    h1, h2 {
+        color: #030303;
+        text-align: center;
+    }
+
+    form {
+        max-width: 600px;
+        margin: 20px auto;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    }
+
+    label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+        color: #333;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    textarea {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+        font-size: 14px;
+    }
+
+    textarea {
+        resize: vertical;
+    }
+
+    button {
+        background-color: #0d0d0e;
+        color: white;
+        border: none;
+        padding: 12px 18px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        width: 100%;
+        transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+        background-color: #080808;
+    }
+
+    footer {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 14px;
+        color: #666;
+    }
+</style>
+
+{% endblock %}

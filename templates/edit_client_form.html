@@ -2,8 +2,8 @@
 
 {% block title %}Add Client{% endblock %}
 
-{% block content %}
-    <h1>Add Client</h1>
+{% block content %}  
+    <h1> Edit Client</h1>
 
     <form action="/clients/edit/form/{{ client.id }}" method="POST">
         <label for="name">Company Name:</label><br>
@@ -27,7 +27,7 @@
         <label for="consultant">Handled By:</label><br>
         <input type="number" id="consultant" name="consultant" placeholder="Consultant's ID" value="{{ client.consultant_id }}" step="1"><br><br>
 
-        <h1>Add Notes</h1>
+        <h1> Edit Notes</h1>
 
         <label for="notes">Notes:</label><br>
         <textarea id="notes" name="notes" placeholder="Enter notes about the client" rows="15" cols="50">{{ client.notes }}</textarea><br><br>
