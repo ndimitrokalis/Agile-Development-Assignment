@@ -1,139 +1,90 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin/CREATE PROJECT</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-            color: #333;
-        }
+{% extends 'dashboard.html' %}
 
-        header {
-            background-color: #0c0c0c;
-            color: white;
-            padding: 20px 0;
-            text-align: center;
-        }
+{% block title %}Add Client{% endblock %}
 
-        .container {
-            width: 90%;
-            max-width: 600px;
-            margin: 20px auto;
-            background: white;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
+{% block content %}  
 
-        h2 {
-            text-align: center;
-            margin-bottom: 20px;
-            color: #030303;
-        }
+<h2>Edit Project</h2>
 
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
+<form action="/projects/edit/{{ project.id }}" id="project-form" method="POST">
+    
+    <label for="project-name">Project Name:</label>
+    <input type="text" id="project-name" name="project-name" placeholder="Project name" aria-required="true" required>
 
-        input[type="text"],
-        input[type="date"],
-        textarea,
-        select {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
+    <label for="client-id">Client ID:</label>
+    <input type="text" id="client-id" name="client-id" placeholder="Client ID" aria-required="true" required>
+    
+    <label for="date">Deadline(YYYY-MM-DD):</label>
+    <input type="date" id="deadline" name="deadline">
 
-        textarea {
-            resize: vertical;
-        }
+    <label for="description">Project Description:</label>
+    <textarea id="description" name="description" placeholder="Project description" rows="5"></textarea>
+    
+    <label for="team-members">Assign Consultants to Project:</label>
+    <select id="team-members" name="team-members" multiple required>
+        <option value="team-member-1">GEORGE</option>
+        <option value="team-member-2">JOANA</option>
+        <option value="team-member-3">NIKOS</option>
+        <option value="team-member-4">ANNA</option>
+    </select>
 
-        button {
-            background-color: #0d0d0e;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            display: block;
-            width: 100%;
-        }
+    <button type="submit">Submit Changes</button> 
+</form>
 
-        button:hover {
-            background-color: #080808;
-        }
+<h2>TASKS </h2>
 
-        footer {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 14px;
-            color: #555;
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <h1>Admin Project Management</h1>
-    </header>
+<style>
 
-    <div class="container">
-        <h2>Edit Project</h2>
-        <form id="project-form" action="/create-project" method="post">
-            {% csrf_token %}
-            
-            <label for="project-name">Project Name:</label>
-            <input type="text" id="project-name" name="project-name" placeholder="Project name" aria-required="true" required>
+    h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #030303;
+    }
 
-            <label for="client-id">Client ID:</label>
-            <input type="text" id="client-id" name="client-id" placeholder="Client ID" aria-required="true" required>
-           
-            
-            <label for="date">Deadline(YYYY-MM-DD):</label>
-            <input type="text" id="date" name="date" pattern="\d{4}-\d{2}-\d{2}" placeholder="YYYY-MM-DD">
+    label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
 
+    input[type="text"],
+    input[type="date"],
+    textarea,
+    select {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
 
-            <label for="description">Project Description:</label>
-            <textarea id="description" name="description" placeholder="Project description" rows="5"></textarea>
-            
-            <label for="team-members">Assign Consultants to Project:</label>
-            <select id="team-members" name="team-members" multiple required>
-                <option value="team-member-1">GEORGE</option>
-                <option value="team-member-2">JOANA</option>
-                <option value="team-member-3">NIKOS</option>
-                <option value="team-member-4">ANNA</option>
-            </select>
+    textarea {
+        resize: vertical;
+    }
 
+    button {
+        background-color: #0d0d0e;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        display: block;
+        width: 100%;
+    }
 
-            <h2>TASKS </h2>
+    button:hover {
+        background-color: #080808;
+    }
 
+    footer {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 14px;
+        color: #555;
+    }
+</style>
 
-
-
-
-            
-
-
-
-
-            
-
-
-
-
-            <button type="submit">Submit Changes</button> 
-        </form>
-    </div>
-</body>
-</html>
-
+{% endblock %}

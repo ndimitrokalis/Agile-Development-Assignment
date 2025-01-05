@@ -9,6 +9,8 @@
         <li>
             {{ client.id }} - {{ client.name }} - {{ client.email }} - {{ client.phone }} - {{ client.address }} - {{ client.ssn }} - {{ client.postalcode }} - {{ client.notes }} - {{ client.consultant_id }}
         </li>
+        {% else %}
+        <li>No Clients available.</li>
         {% endfor %}
     </ul>
 {% endblock %}

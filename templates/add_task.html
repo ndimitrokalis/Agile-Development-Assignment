@@ -1,95 +1,90 @@
 {% extends 'dashboard.html' %}
 
 {% block title %}Add Task{% endblock %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Task for Project</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
-        .container {
-            width: 80%;
-            margin: auto;
-            overflow: hidden;
-            padding: 20px;
-            background: white;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        header {
-            background: #333;
-            color: #fff;
-            padding: 10px 0;
-            text-align: center;
-        }
-        header h1 {
-            margin: 0;
-            font-size: 24px;
-        }
-        form {
-            margin: 20px 0;
-        }
-        label {
-            display: block;
-            margin: 10px 0 5px;
-        }
-        input, select, textarea, button {
-            width: 100%;
-            padding: 10px;
-            margin: 5px 0 20px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-        button {
-            background: #333;
-            color: #fff;
-            cursor: pointer;
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <h1>Create Task for Project</h1>
-    </header>
 
-    <div class="container">
-        <form id="task-form">
-            <label for="task-project">Select Project:</label>
-            <select id="task-project" name="task-project" required>
-                <option value="project-alpha">Project A</option>
-                <option value="project-beta">Project B</option>
-                <option value="project-alpha">Project C</option>
-                <option value="project-beta">Project D</option>
-                <option value="project-alpha">Project E</option>
-                <option value="project-beta">Project F</option>
-                
-            </select>
-
-            <label for="task-name">Task Name:</label>
-            <input type="text" id="task-name" name="task-name" placeholder="Enter task name" required>
-
-            
-            </select>
-
-            <label for="date">Deadline(YYYY-MM-DD):</label>
-            <input type="text" id="date" name="date" pattern="\d{4}-\d{2}-\d{2}" placeholder="YYYY-MM-DD">
-
-            <label for="task-description">Task Description:</label>
-            <textarea id="task-description" name="task-description" placeholder="Enter task description" rows="5"></textarea>
-
-            <button type="submit">Create Task</button>
-        </form>
-    </div>
-</body>
-</html>
 {% block content %}
 
+<h2>Add Task</h2>
 
+<form method="post" id="task-form" action="/add/task">
+
+    <label for="task-project">Select Project:</label>
+    <select id="task-project" name="task-project" required>
+        <option value="project-alpha">Project A</option>
+        <option value="project-beta">Project B</option>
+        <option value="project-alpha">Project C</option>
+        <option value="project-beta">Project D</option>
+        <option value="project-alpha">Project E</option>
+        <option value="project-beta">Project F</option>
+    </select>
+
+    <label for="task-name">Task Name:</label>
+    <input type="text" id="task-name" name="task-name" placeholder="Enter task name" required>
+
+    </select>
+
+    <label for="date">Deadline:</label>
+    <input type="date" id="deadline" name="deadline">
+
+    <label for="description">Task Description:</label>
+    <textarea id="description" name="description" placeholder="Enter task description" rows="5"></textarea>
+
+    <button type="submit">Create Task</button>
+</form>
+
+<style>
+    
+    h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #030303;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+
+    select {
+        width: 100%;
+        padding: 10px;
+        margin: 5px 0 20px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+    }
+
+    input[type="text"],
+    input[type="date"],
+    textarea {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+
+    textarea {
+        resize: vertical;
+    }
+
+    button {
+        background-color: #0d0d0e;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        display: block;
+        width: 100%;
+    }
+
+    button:hover {
+        background-color: #080808;
+    }
+
+</style>
 
 {% endblock %}

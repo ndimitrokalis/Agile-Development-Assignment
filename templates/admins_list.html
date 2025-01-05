@@ -9,6 +9,8 @@
         <li>
             {{ admin.id }} - {{ admin.fullname }} - {{ admin.username }} - {{ admin.email }} - {{ admin.phone }}
         </li>
+        {% else %}
+        <li>No Admins available.</li>
         {% endfor %}
     </ul>
 {% endblock %}

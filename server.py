@@ -1,7 +1,8 @@
 from flask import Flask, render_template, request, redirect, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, LoginManager, login_required, logout_user, login_user, current_user
-from werkzeug.security import generate_password_hash, check_password_hash 
+from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -43,7 +44,6 @@ class Project(db.Model):
     consultant_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     description = db.Column(db.String(500), nullable=True)
     completed = db.Column(db.Boolean, default=False, nullable=False)
-
 
 @app.route("/")
 def home():
@@ -140,21 +140,6 @@ def edit_client():
     all_clients = Client.query.all()
     return render_template('edit_client.html', clients=all_clients)
 
-@app.route('/add/project')
-@login_required
-def add_project():
-    return render_template('add_project.html')
-
-@app.route('/add/task')
-@login_required
-def add_task():
-    return render_template('add_task.html')
-
-@app.route('/manage/project')
-@login_required
-def manage_projects():
-    return render_template('manage_projects.html')
-
 @app.route("/clients/edit/form/<int:client_id>", methods=['GET', 'POST'])
 @login_required
 def edit_client_form(client_id):
@@ -196,9 +181,65 @@ def delete_client(client_id):
         print(f"Error: {e}")
         return "An error occurred while deleting the client", 500 
 
+@app.route('/add/project', methods=['GET', 'POST'])
+@login_required
+def add_project():
+    if current_user.role != 'admin':
+        return "Unauthorized", 403
+    return render_template('add_project.html')
+
+@app.route('/add/task', methods=['GET', 'POST'])
+@login_required
+def add_task():
+    if current_user.role != 'admin':
+        return "Unauthorized", 403
+    return render_template('add_task.html')
+
+@app.route('/manage/project')
+@login_required
+def manage_projects():
+    if current_user.role != 'admin':
+        return "Unauthorized", 403
+    all_projects = Project.query.all()
+    return render_template('manage_project.html', projects=all_projects)
+
+@app.route("/projects/edit/<int:project_id>", methods=['GET', 'POST'])
+@login_required
+def edit_project(project_id):
+    if current_user.role != 'admin':
+        return "Unauthorized", 403
+    project = Project.query.get(project_id)
+    return render_template('edit_project.html', project=project)
+
+@app.route("/projects/delete/<int:project_id>", methods=['POST'])
+@login_required
+def delete_project(project_id):
+    if current_user.role != 'admin':
+        return "Unauthorized", 403
+    project = Project.query.get(project_id)
+    return redirect('/manage/project')
+
+@app.route("/projects/tasks/edit/<int:task_id>", methods=['GET', 'POST'])
+@login_required
+def edit_task(task_id):
+    if current_user.role != 'admin':
+        return "Unauthorized", 403
+    #task = Task.query.get(task_id)
+    return render_template('edit_project_task.html')
+
+@app.route("/projects/tasks/delete/<int:task_id>", methods=['POST'])
+@login_required
+def delete_task(task_id):
+    if current_user.role != 'admin':
+        return "Unauthorized", 403
+    #task = Task.query.get(task_id)
+    return redirect('/projects/edit/<int:project_id>')
+
 @app.route("/clients/list")
 @login_required
 def clients_list():
+    if current_user.role != 'admin':
+        return "Unauthorized", 403
     all_clients = Client.query.all()
     total_clients = Client.query.count()
     return render_template('clients_list.html', clients=all_clients, total_clients=total_clients)
@@ -206,6 +247,8 @@ def clients_list():
 @app.route("/consultants/list")
 @login_required
 def consultants_list():
+    if current_user.role != 'admin':
+        return "Unauthorized", 403
     all_consultants = User.query.filter_by(role='consultant').all()
     total_consultants = User.query.filter_by(role='consultant').count()
     return render_template('consultants_list.html', consultants=all_consultants, total_consultants=total_consultants)
@@ -213,6 +256,8 @@ def consultants_list():
 @app.route("/admins/list")
 @login_required
 def admin_list():
+    if current_user.role != 'admin':
+        return "Unauthorized", 403
     all_admins = User.query.filter_by(role='admin').all()
     total_admins = User.query.filter_by(role='admin').count()
     return render_template('admins_list.html', admins=all_admins, total_admins=total_admins)
@@ -220,12 +265,16 @@ def admin_list():
 @app.route('/active/projects/list')
 @login_required
 def active_projects():
+    if current_user.role != 'admin':
+        return "Unauthorized", 403
     total_active_projects = Project.query.filter_by(completed=False).count()
     return render_template('active_projects_list.html', total_active_projects=total_active_projects)
 
 @app.route('/completed/projects/list')
 @login_required
 def completed_projects():
+    if current_user.role != 'admin':
+        return "Unauthorized", 403
     total_completed_projects = Project.query.filter_by(completed=True).count()
     return render_template('completed_projects_list.html', total_completed_projects=total_completed_projects)
 

@@ -9,6 +9,8 @@
         <li>
             {{ consultant.id }} - {{ consultant.fullname }} - {{ consultant.username }} - {{ consultant.email }} - {{ consultant.phone }}
         </li>
+        {% else %}
+        <li>No Consultants available.</li>
         {% endfor %}
     </ul>
 {% endblock %}
