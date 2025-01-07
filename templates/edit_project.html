@@ -9,23 +9,37 @@
 <form action="/projects/edit/{{ project.id }}" id="project-form" method="POST">
     
     <label for="project-name">Project Name:</label>
-    <input type="text" id="project-name" name="project-name" placeholder="Project name" aria-required="true" required>
+    <input type="text" id="project-name" name="project-name" placeholder="Project name" value="{{ project.name }}" aria-required="true" required>
 
     <label for="client-id">Client ID:</label>
-    <input type="text" id="client-id" name="client-id" placeholder="Client ID" aria-required="true" required>
+    <input type="text" id="client-id" name="client-id" placeholder="Client ID" value="{{ project.client_id }}" aria-required="true" required>
     
-    <label for="date">Deadline(YYYY-MM-DD):</label>
-    <input type="date" id="deadline" name="deadline">
+    <label for="date">Deadline:</label>
+    <input type="date" id="deadline" name="deadline" value="{{ project.deadline }}">
 
     <label for="description">Project Description:</label>
-    <textarea id="description" name="description" placeholder="Project description" rows="5"></textarea>
+    <textarea id="description" name="description" placeholder="Project description" rows="5">{{ project.description }}</textarea>
     
-    <label for="team-members">Assign Consultants to Project:</label>
-    <select id="team-members" name="team-members" multiple required>
-        <option value="team-member-1">GEORGE</option>
-        <option value="team-member-2">JOANA</option>
-        <option value="team-member-3">NIKOS</option>
-        <option value="team-member-4">ANNA</option>
+    <!-- <label for="team-members">Assign Consultants to Project:</label>
+    <select id="team-members" name="team-members" value="{{ project.consultant_id }}" multiple>
+        <option value="GEORGE">GEORGE</option>
+        <option value="JOANA">JOANA</option>
+        <option value="NIKOS">NIKOS</option>
+        <option value="ANNA">ANNA</option>
+    </select> -->
+
+    <label for="consultants">Assign Consultants:</label>
+    <select id="consultants" name="consultants_ids" multiple>
+        {% for consultant in consultants %}
+        <option value="{{ consultant.id }}" {% if consultant.id in consultants_ids %}selected{% endif %}>{{ consultant.username }}</option>
+        {% endfor %}
+    </select>
+        
+
+    <label for="status">Status:</label>
+    <select id="status" name="status">
+        <option value="false" {% if not project.completed %}selected{% endif %}>Not Completed</option>
+        <option value="true" {% if project.completed %}selected{% endif %}>Completed</option>
     </select>
 
     <button type="submit">Submit Changes</button> 

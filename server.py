@@ -15,6 +15,12 @@ db = SQLAlchemy(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 
+project_consultants = db.Table(
+    'project_consultants',
+    db.Column('project_id', db.Integer, db.ForeignKey('project.id'), primary_key=True),
+    db.Column('consultant_id', db.Integer, db.ForeignKey('user.id'), primary_key=True)
+)
+
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     fullname = db.Column(db.String(150), nullable=False)
@@ -24,6 +30,7 @@ class User(UserMixin, db.Model):
     password = db.Column(db.String(200), nullable=False)
     role = db.Column(db.String(20), nullable=False, default='consultant')
     clients = db.relationship('Client', back_populates='consultant')
+    projects = db.relationship('Project', secondary=project_consultants, back_populates='consultants')
 
 class Client(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -40,10 +47,37 @@ class Client(db.Model):
 class Project(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(150), nullable=False)
+    client_id = db.Column(db.Integer, db.ForeignKey('client.id'), nullable=False)
     deadline = db.Column(db.Date, nullable=True)
     consultant_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     description = db.Column(db.String(500), nullable=True)
     completed = db.Column(db.Boolean, default=False, nullable=False)
+    consultants = db.relationship('User', secondary=project_consultants, back_populates='projects')
+    
+
+
+
+
+
+
+class Task(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(150), nullable=False)
+    project_id = db.Column(db.Integer, db.ForeignKey('project.id'), nullable=False)
+    deadline = db.Column(db.Date, nullable=True)
+    consultant_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+    description = db.Column(db.String(500), nullable=True)
+    completed = db.Column(db.Boolean, default=False, nullable=False) 
+
+
+
+
+
+
+
+
+
+    
 
 @app.route("/")
 def home():
@@ -165,6 +199,7 @@ def edit_client_form(client_id):
             return redirect(f'/clients/edit/form/{client_id}')
     return render_template('edit_client_form.html', client=client)
 
+
 @app.route("/clients/delete/<int:client_id>", methods=['POST'])
 @login_required
 def delete_client(client_id):
@@ -180,20 +215,67 @@ def delete_client(client_id):
     except Exception as e:
         print(f"Error: {e}")
         return "An error occurred while deleting the client", 500 
+    
+
+
+
+
+
+
+
+
 
 @app.route('/add/project', methods=['GET', 'POST'])
 @login_required
 def add_project():
     if current_user.role != 'admin':
         return "Unauthorized", 403
+    if request.method == 'POST':
+        name = request.form.get('project-name')
+        client_id = request.form.get('client-id')
+        deadline = datetime.strptime(request.form.get('deadline'), '%Y-%m-%d').date() if request.form.get('deadline') else None
+        consultant_id = request.form.get("client-id")
+        description = request.form.get("description")
+        new_project = Project(name=name, client_id=client_id, deadline=deadline, consultant_id=consultant_id, description=description)
+        try:
+            db.session.add(new_project)
+            db.session.commit()
+            return redirect('/dashboard')
+        except Exception as e:
+            print(f"Error: {e}")
+            return redirect('/add/project')
     return render_template('add_project.html')
+
+
 
 @app.route('/add/task', methods=['GET', 'POST'])
 @login_required
 def add_task():
     if current_user.role != 'admin':
         return "Unauthorized", 403
+    if request.method == 'POST':
+        name = request.form.get('task-name')
+        project_id = request.form.get('task-project')
+        deadline = datetime.strptime(request.form.get('deadline'), '%Y-%m-%d').date() if request.form.get('deadline') else None
+        consultant_id = request.form.get("client-id")
+        description = request.form.get("description")
+        new_project = Project(name=name, project_id=project_id, deadline=deadline, consultant_id=consultant_id, description=description)
+        try:
+            db.session.add(new_project)
+            db.session.commit()
+            return redirect('/dashboard')
+        except Exception as e:
+            print(f"Error: {e}")
+            return redirect('/add/task')
     return render_template('add_task.html')
+
+
+
+
+
+
+
+
 
 @app.route('/manage/project')
 @login_required
@@ -209,7 +291,25 @@ def edit_project(project_id):
     if current_user.role != 'admin':
         return "Unauthorized", 403
     project = Project.query.get(project_id)
-    return render_template('edit_project.html', project=project)
+    all_consultants = User.query.filter_by(role='consultant').all()
+    if not project:
+        return "Project not found", 404
+    if request.method == 'POST':
+        project.name = request.form.get('project-name')
+        project.client_id = request.form.get('client-id')
+        project.deadline = datetime.strptime(request.form.get('deadline'), '%Y-%m-%d').date() if request.form.get('deadline') else None
+        project.consultant_id = request.form.get('consultants_ids')
+        project.description = request.form.get('description')
+        project.completed = request.form.get('status') == "true"
+        try:
+            db.session.commit()
+            return redirect('/manage/project')  
+        except Exception as e:
+            print(f"Error: {e}")
+            return "An error occurred while updating the project", 500
+    return render_template('edit_project.html', project=project, consultants=all_consultants)
+
+
 
 @app.route("/projects/delete/<int:project_id>", methods=['POST'])
 @login_required
@@ -217,24 +317,54 @@ def delete_project(project_id):
     if current_user.role != 'admin':
         return "Unauthorized", 403
     project = Project.query.get(project_id)
-    return redirect('/manage/project')
+    if not Project:
+        return "Project not found", 404
+    try:
+        db.session.delete(project)
+        db.session.commit()
+        return redirect('/manage/project')
+    except Exception as e:
+        print(f"Error: {e}")
+        return "An error occurred while deleting the project", 500 
 
 @app.route("/projects/tasks/edit/<int:task_id>", methods=['GET', 'POST'])
 @login_required
 def edit_task(task_id):
     if current_user.role != 'admin':
         return "Unauthorized", 403
-    #task = Task.query.get(task_id)
-    return render_template('edit_project_task.html')
+    task = Task.query.get(task_id)
+    if not Task:
+        return "Task not found", 404
+    if request.method == 'POST':
+        task.name = request.form.get('name')
+        task.client_id = request.form.get('client-id')
+        task.deadline = datetime.strptime(request.form.get('deadline'), '%Y-%m-%d').date() if request.form.get('deadline') else None
+        task.consultant_id = request.form.get('team-members')
+        task.description = request.form.get('description')
+        try:
+            db.session.commit()
+            return redirect('/tasks/dashboard')
+        except Exception as e:
+            print(f"Error: {e}")
+            return "An error occurred while updating the task", 500
+    return render_template('edit_project_task.html', task=task)
 
 @app.route("/projects/tasks/delete/<int:task_id>", methods=['POST'])
 @login_required
 def delete_task(task_id):
     if current_user.role != 'admin':
         return "Unauthorized", 403
-    #task = Task.query.get(task_id)
-    return redirect('/projects/edit/<int:project_id>')
-
+    task = Task.query.get(task_id)
+    if not Task:
+        return "Task not found", 404
+    try:
+        db.session.delete(task)
+        db.session.commit()
+        return redirect('/projects/edit/<int:project_id>')
+    except Exception as e:
+        print(f"Error: {e}")
+        return "An error occurred while deleting the task", 500 
+    
 @app.route("/clients/list")
 @login_required
 def clients_list():
