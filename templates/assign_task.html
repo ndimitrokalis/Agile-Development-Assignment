@@ -1,0 +1,34 @@
+{% extends 'dashboard.html' %}
+
+
+{% block title %}Assign task{% endblock %}
+
+{% block content %}
+
+<h2>Assign a Task</h2>
+<form method="POST" action="{/Assign/task}">
+    <label for="task-title">Task Title:</label><br>
+    <input type="text" id="task-title" name="task-title" required><br><br>
+
+    <label for="task-description">Task Description:</label><br>
+    <textarea id="task-description" name="task-description" rows="4" required></textarea><br><br>
+
+    <label for="task-deadline">Deadline:</label><br>
+    <input type="date" id="task-deadline" name="task-deadline" required><br><br>
+
+    <label for="consultant">Assign to:</label><br>
+    <select id="consultant" name="consultants_id" required>
+        {% for consultant in consultants %}
+            <option value="{{ consultant.id }}">{{ consultant.fullname }}</option>
+        {% else %}
+            <option disabled>No consultants available</option>
+        {% endfor %}
+    </select><br><br>
+    
+    <button type="submit">Assign Task</button>
+    </select><br><br>
+</form>
+
+
+
+
