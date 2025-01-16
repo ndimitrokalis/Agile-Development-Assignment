@@ -3,7 +3,15 @@
 {% block title %}Completed Projects{% endblock %}
 
 {% block content %}
-
-
+    <h1>Completed Projects</h1>
+        <ul>
+            {% for Completed_Project in Completed_Projects %}
+            <li>
+                {{Completed_Project.id }} - {{ Completed_Project.client_id }} - {{ Completed_Project.deadline}} - {{ Completed_Project.consultant_id }} - {{ Completed_Project.description }} - {{ Completed_Project.completed }} - {{ Completed_Project.consultants }}
+            </li>
+            {% else %}
+            <li>No Projects available.</li>
+            {% endfor %}
+        </ul>
 
 {% endblock %}

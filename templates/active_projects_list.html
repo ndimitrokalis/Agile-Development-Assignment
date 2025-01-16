@@ -3,7 +3,14 @@
 {% block title %}Active Projects{% endblock %}
 
 {% block content %}
-
-
-
+    <h1>Active Projects</h1>
+        <ul>
+            {% for Active_Project in Active_Projects %}
+            <li>
+                {{Active_Project.id }} - {{ Active_Project.client_id }} - {{ Active_Project.deadline}} - {{ Active_Project.consultant_id }} - {{ Active_Project.description }} - {{ Active_Project.completed }} - {{ Active_Project.consultants }}
+            </li>
+            {% else %}
+            <li>No Projects available.</li>
+            {% endfor %}
+        </ul>
 {% endblock %}
