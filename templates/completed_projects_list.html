@@ -5,9 +5,15 @@
 {% block content %}
     <h1>Completed Projects</h1>
         <ul>
-            {% for Completed_Project in Completed_Projects %}
+            {% for completed_project in completed_projects %}
             <li>
-                {{Completed_Project.id }} - {{ Completed_Project.client_id }} - {{ Completed_Project.deadline}} - {{ Completed_Project.consultant_id }} - {{ Completed_Project.description }} - {{ Completed_Project.completed }} - {{ Completed_Project.consultants }}
+                {{completed_project.id }} - 
+                {{ completed_project.name }} - 
+                {{ completed_project.client_id }} - 
+                {{ completed_project.deadline}} - 
+                {{ completed_project.consultant_id }} - 
+                {{ completed_project.description }} - 
+                {{ completed_project.consultants if completed_project.consultants else "None" }}
             </li>
             {% else %}
             <li>No Projects available.</li>

@@ -53,12 +53,6 @@ class Project(db.Model):
     description = db.Column(db.String(500), nullable=True)
     completed = db.Column(db.Boolean, default=False, nullable=False)
     consultants = db.relationship('User', secondary=project_consultants, back_populates='projects')
-    
-
-
-
-
-
 
 class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -68,16 +62,6 @@ class Task(db.Model):
     consultant_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     description = db.Column(db.String(500), nullable=True)
     completed = db.Column(db.Boolean, default=False, nullable=False) 
-
-
-
-
-
-
-
-
-
-    
 
 @app.route("/")
 def home():
@@ -140,7 +124,7 @@ def register_user():
             return redirect('/login')
         except Exception as e:
             print(f"Error: {e}")
-            return redirect('/register')  # Handle duplicate entry or other errors
+            return redirect('/register')
     return render_template('register.html')
 
 @app.route("/clients/add", methods=['GET', 'POST'])
@@ -153,9 +137,9 @@ def add_client():
         email = request.form.get('email')
         phone = request.form.get('phone')
         address = request.form.get('address')
-        ssn = request.form.get("ssn")
-        postalcode = request.form.get("postalcode")
-        notes = request.form.get("notes")
+        ssn = request.form.get('ssn')
+        postalcode = request.form.get('postalcode')
+        notes = request.form.get('notes')
         new_client = Client(name=name, email=email, phone=phone, address=address, ssn=ssn, postalcode=postalcode, notes=notes)
         try:
             db.session.add(new_client)
@@ -199,7 +183,6 @@ def edit_client_form(client_id):
             return redirect(f'/clients/edit/form/{client_id}')
     return render_template('edit_client_form.html', client=client)
 
-
 @app.route("/clients/delete/<int:client_id>", methods=['POST'])
 @login_required
 def delete_client(client_id):
@@ -216,15 +199,6 @@ def delete_client(client_id):
         print(f"Error: {e}")
         return "An error occurred while deleting the client", 500 
     
-
-
-
-
-
-
-
-
-
 @app.route('/add/project', methods=['GET', 'POST'])
 @login_required
 def add_project():
@@ -234,9 +208,8 @@ def add_project():
         name = request.form.get('project-name')
         client_id = request.form.get('client-id')
         deadline = datetime.strptime(request.form.get('deadline'), '%Y-%m-%d').date() if request.form.get('deadline') else None
-        consultant_id = request.form.get("client-id")
-        description = request.form.get("description")
-        new_project = Project(name=name, client_id=client_id, deadline=deadline, consultant_id=consultant_id, description=description)
+        description = request.form.get('description')
+        new_project = Project(name=name, client_id=client_id, deadline=deadline, description=description)
         try:
             db.session.add(new_project)
             db.session.commit()
@@ -245,8 +218,6 @@ def add_project():
             print(f"Error: {e}")
             return redirect('/add/project')
     return render_template('add_project.html')
-
-
 
 @app.route('/add/task', methods=['GET', 'POST'])
 @login_required
@@ -257,9 +228,8 @@ def add_task():
         name = request.form.get('task-name')
         project_id = request.form.get('task-project')
         deadline = datetime.strptime(request.form.get('deadline'), '%Y-%m-%d').date() if request.form.get('deadline') else None
-        consultant_id = request.form.get("client-id")
-        description = request.form.get("description")
-        new_project = Project(name=name, project_id=project_id, deadline=deadline, consultant_id=consultant_id, description=description)
+        description = request.form.get('description')
+        new_project = Project(name=name, project_id=project_id, deadline=deadline, description=description)
         try:
             db.session.add(new_project)
             db.session.commit()
@@ -268,14 +238,6 @@ def add_task():
             print(f"Error: {e}")
             return redirect('/add/task')
     return render_template('add_task.html')
-
-
-
-
-
-
-
-
 
 @app.route('/manage/project')
 @login_required
@@ -308,8 +270,6 @@ def edit_project(project_id):
             print(f"Error: {e}")
             return "An error occurred while updating the project", 500
     return render_template('edit_project.html', project=project, consultants=all_consultants)
-
-
 
 @app.route("/projects/delete/<int:project_id>", methods=['POST'])
 @login_required
@@ -397,16 +357,18 @@ def admin_list():
 def active_projects():
     if current_user.role != 'admin':
         return "Unauthorized", 403
+    all_active_projects = Project.query.filter_by(completed=False).all()
     total_active_projects = Project.query.filter_by(completed=False).count()
-    return render_template('active_projects_list.html', total_active_projects=total_active_projects)
+    return render_template('active_projects_list.html', active_projects=all_active_projects, total_active_projects=total_active_projects)
 
 @app.route('/completed/projects/list')
 @login_required
 def completed_projects():
     if current_user.role != 'admin':
         return "Unauthorized", 403
+    all_completed_projects = Project.query.filter_by(completed=True).all()
     total_completed_projects = Project.query.filter_by(completed=True).count()
-    return render_template('completed_projects_list.html', total_completed_projects=total_completed_projects)
+    return render_template('completed_projects_list.html', completed_projects=all_completed_projects, total_completed_projects=total_completed_projects)
 
 @app.route("/profile")
 @login_required

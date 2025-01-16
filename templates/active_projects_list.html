@@ -5,9 +5,15 @@
 {% block content %}
     <h1>Active Projects</h1>
         <ul>
-            {% for Active_Project in Active_Projects %}
+            {% for active_project in active_projects %}
             <li>
-                {{Active_Project.id }} - {{ Active_Project.client_id }} - {{ Active_Project.deadline}} - {{ Active_Project.consultant_id }} - {{ Active_Project.description }} - {{ Active_Project.completed }} - {{ Active_Project.consultants }}
+                {{active_project.id }} - 
+                {{ active_project.name }} - 
+                {{ active_project.client_id }} - 
+                {{ active_project.deadline}} - 
+                {{ active_project.consultant_id }} - 
+                {{ active_project.description }} - 
+                {{ active_project.consultants if active_project.consultants else "None" }}
             </li>
             {% else %}
             <li>No Projects available.</li>
