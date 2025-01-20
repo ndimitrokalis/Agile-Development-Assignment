@@ -7,13 +7,16 @@
         <ul>
             {% for active_project in active_projects %}
             <li>
-                {{active_project.id }} - 
+                {{ active_project.id }} - 
                 {{ active_project.name }} - 
-                {{ active_project.client_id }} - 
+                {{ active_project.client_id }}:{{ active_project.client.name }} - 
                 {{ active_project.deadline}} - 
-                {{ active_project.consultant_id }} - 
-                {{ active_project.description }} - 
-                {{ active_project.consultants if active_project.consultants else "None" }}
+                {% if active_project.consultants %}
+                    {% for consultant in active_project.consultants %}{{ consultant.id }}:{{ consultant.fullname }}{% if not loop.last %}, {% endif %}{% endfor %}
+                {% else %}
+                    No Consultant Assigned
+                {% endif %} - 
+                {{ active_project.description }}
             </li>
             {% else %}
             <li>No Projects available.</li>

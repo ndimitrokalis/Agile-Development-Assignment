@@ -12,7 +12,13 @@
     <input type="text" id="project-name" name="project-name" placeholder="Enter project name" aria-required="true" required>
 
     <label for="client-id">Client ID:</label>
-    <input type="text" id="client-id" name="client-id" placeholder="Enter client ID" aria-required="true" required>
+    <select id="client-id" name="client-id" required>
+        {% for client in clients %}
+            <option value="{{ client.id }}">{{ client.name }}</option>
+        {% else %}
+            <option disabled>No clients available</option>
+        {% endfor %}
+    </select>
 
     <label for="date">Deadline:</label>
     <input type="date" id="deadline" name="deadline">
@@ -35,6 +41,14 @@
         display: block;
         margin-bottom: 5px;
         font-weight: bold;
+    }
+
+    select {
+        width: 100%;
+        padding: 10px;
+        margin: 5px 0 20px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
     }
 
     input[type="text"],

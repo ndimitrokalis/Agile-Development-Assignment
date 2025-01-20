@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, flash
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import CheckConstraint
 from flask_login import UserMixin, LoginManager, login_required, logout_user, login_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
@@ -31,6 +32,7 @@ class User(UserMixin, db.Model):
     role = db.Column(db.String(20), nullable=False, default='consultant')
     clients = db.relationship('Client', back_populates='consultant')
     projects = db.relationship('Project', secondary=project_consultants, back_populates='consultants')
+    tasks = db.relationship('Task', back_populates='consultant')
 
 class Client(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -43,16 +45,22 @@ class Client(db.Model):
     notes = db.Column(db.String(500), nullable=True)
     consultant_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     consultant = db.relationship('User', back_populates='clients')
+    projects = db.relationship('Project', back_populates='client')
 
 class Project(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(150), nullable=False)
     client_id = db.Column(db.Integer, db.ForeignKey('client.id'), nullable=False)
     deadline = db.Column(db.Date, nullable=True)
-    consultant_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     description = db.Column(db.String(500), nullable=True)
-    completed = db.Column(db.Boolean, default=False, nullable=False)
+    status = db.Column(db.String(20), default="To Do", nullable=False)
     consultants = db.relationship('User', secondary=project_consultants, back_populates='projects')
+    client = db.relationship('Client', back_populates='projects')
+    tasks = db.relationship('Task', back_populates='project')
+
+    __table_args__ = (
+        CheckConstraint("status IN ('To Do', 'In Progress', 'Completed')", name="check_project_status"),
+    )
 
 class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -61,7 +69,13 @@ class Task(db.Model):
     deadline = db.Column(db.Date, nullable=True)
     consultant_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     description = db.Column(db.String(500), nullable=True)
-    completed = db.Column(db.Boolean, default=False, nullable=False) 
+    status = db.Column(db.String(20), default="To Do", nullable=False)
+    project = db.relationship('Project', back_populates='tasks')
+    consultant = db.relationship('User', back_populates='tasks')
+
+    __table_args__ = (
+        CheckConstraint("status IN ('To Do', 'In Progress', 'Completed')", name="check_task_status"),
+    )
 
 @app.route("/")
 def home():
@@ -164,6 +178,7 @@ def edit_client_form(client_id):
     if current_user.role != 'admin':
         return "Unauthorized", 403
     client = Client.query.get(client_id)
+    all_consultants = User.query.filter_by(role='consultant').all()
     if not client:
         return "Client not found", 404
     if request.method == 'POST':
@@ -181,7 +196,7 @@ def edit_client_form(client_id):
         except Exception as e:
             print(f"Error: {e}")
             return redirect(f'/clients/edit/form/{client_id}')
-    return render_template('edit_client_form.html', client=client)
+    return render_template('edit_client_form.html', client=client, consultants=all_consultants)
 
 @app.route("/clients/delete/<int:client_id>", methods=['POST'])
 @login_required
@@ -204,6 +219,7 @@ def delete_client(client_id):
 def add_project():
     if current_user.role != 'admin':
         return "Unauthorized", 403
+    all_clients = Client.query.all()
     if request.method == 'POST':
         name = request.form.get('project-name')
         client_id = request.form.get('client-id')
@@ -217,27 +233,28 @@ def add_project():
         except Exception as e:
             print(f"Error: {e}")
             return redirect('/add/project')
-    return render_template('add_project.html')
+    return render_template('add_project.html', clients=all_clients)
 
 @app.route('/add/task', methods=['GET', 'POST'])
 @login_required
 def add_task():
     if current_user.role != 'admin':
         return "Unauthorized", 403
+    all_projects = Project.query.all()
     if request.method == 'POST':
         name = request.form.get('task-name')
-        project_id = request.form.get('task-project')
+        project_id = request.form.get('project')
         deadline = datetime.strptime(request.form.get('deadline'), '%Y-%m-%d').date() if request.form.get('deadline') else None
         description = request.form.get('description')
-        new_project = Project(name=name, project_id=project_id, deadline=deadline, description=description)
+        new_task = Task(name=name, project_id=project_id, deadline=deadline, description=description)
         try:
-            db.session.add(new_project)
+            db.session.add(new_task)
             db.session.commit()
             return redirect('/dashboard')
         except Exception as e:
             print(f"Error: {e}")
             return redirect('/add/task')
-    return render_template('add_task.html')
+    return render_template('add_task.html', projects=all_projects)
 
 @app.route('/manage/project')
 @login_required
@@ -253,23 +270,26 @@ def edit_project(project_id):
     if current_user.role != 'admin':
         return "Unauthorized", 403
     project = Project.query.get(project_id)
+    all_clients = Client.query.all()
     all_consultants = User.query.filter_by(role='consultant').all()
+    all_project_tasks = Task.query.filter_by(project_id=project_id).all()
     if not project:
         return "Project not found", 404
     if request.method == 'POST':
         project.name = request.form.get('project-name')
         project.client_id = request.form.get('client-id')
         project.deadline = datetime.strptime(request.form.get('deadline'), '%Y-%m-%d').date() if request.form.get('deadline') else None
-        project.consultant_id = request.form.get('consultants_ids')
+        selected_consultants = request.form.getlist('consultants_ids')
+        project.consultants = User.query.filter(User.id.in_(selected_consultants)).all()
         project.description = request.form.get('description')
-        project.completed = request.form.get('status') == "true"
+        project.status = request.form.get('status')
         try:
             db.session.commit()
             return redirect('/manage/project')  
         except Exception as e:
             print(f"Error: {e}")
             return "An error occurred while updating the project", 500
-    return render_template('edit_project.html', project=project, consultants=all_consultants)
+    return render_template('edit_project.html', project=project, consultants=all_consultants, tasks=all_project_tasks, clients=all_clients, selected_client=project.client_id)
 
 @app.route("/projects/delete/<int:project_id>", methods=['POST'])
 @login_required
@@ -293,21 +313,25 @@ def edit_task(task_id):
     if current_user.role != 'admin':
         return "Unauthorized", 403
     task = Task.query.get(task_id)
+    all_projects = Project.query.all()
+    all_consultants = User.query.filter_by(role='consultant').all()
+    project_id = task.project_id
     if not Task:
         return "Task not found", 404
     if request.method == 'POST':
         task.name = request.form.get('name')
-        task.client_id = request.form.get('client-id')
+        task.project_id = request.form.get('project-id')
         task.deadline = datetime.strptime(request.form.get('deadline'), '%Y-%m-%d').date() if request.form.get('deadline') else None
-        task.consultant_id = request.form.get('team-members')
+        task.consultant_id = request.form.get('consultant_id')
         task.description = request.form.get('description')
+        task.status = request.form.get('status')
         try:
             db.session.commit()
-            return redirect('/tasks/dashboard')
+            return redirect(f'/projects/edit/{project_id}')
         except Exception as e:
             print(f"Error: {e}")
             return "An error occurred while updating the task", 500
-    return render_template('edit_project_task.html', task=task)
+    return render_template('edit_project_task.html', task=task, projects=all_projects, consultants=all_consultants, selected_project=task.project_id, selected_consultant=task.consultant_id)
 
 @app.route("/projects/tasks/delete/<int:task_id>", methods=['POST'])
 @login_required
@@ -315,12 +339,13 @@ def delete_task(task_id):
     if current_user.role != 'admin':
         return "Unauthorized", 403
     task = Task.query.get(task_id)
+    project_id = task.project_id
     if not Task:
         return "Task not found", 404
     try:
         db.session.delete(task)
         db.session.commit()
-        return redirect('/projects/edit/<int:project_id>')
+        return redirect(f'/projects/edit/{project_id}')
     except Exception as e:
         print(f"Error: {e}")
         return "An error occurred while deleting the task", 500 
@@ -357,8 +382,8 @@ def admin_list():
 def active_projects():
     if current_user.role != 'admin':
         return "Unauthorized", 403
-    all_active_projects = Project.query.filter_by(completed=False).all()
-    total_active_projects = Project.query.filter_by(completed=False).count()
+    all_active_projects = Project.query.filter(Project.status.in_(['To Do', 'In Progress'])).all()
+    total_active_projects = Project.query.filter(Project.status.in_(['To Do', 'In Progress'])).count()
     return render_template('active_projects_list.html', active_projects=all_active_projects, total_active_projects=total_active_projects)
 
 @app.route('/completed/projects/list')
@@ -366,8 +391,8 @@ def active_projects():
 def completed_projects():
     if current_user.role != 'admin':
         return "Unauthorized", 403
-    all_completed_projects = Project.query.filter_by(completed=True).all()
-    total_completed_projects = Project.query.filter_by(completed=True).count()
+    all_completed_projects = Project.query.filter_by(status='Completed').all()
+    total_completed_projects = Project.query.filter_by(status='Completed').count()
     return render_template('completed_projects_list.html', completed_projects=all_completed_projects, total_completed_projects=total_completed_projects)
 
 @app.route("/profile")

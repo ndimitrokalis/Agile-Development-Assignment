@@ -7,7 +7,15 @@
     <ul>
         {% for client in clients %}
         <li>
-            {{ client.id }} - {{ client.name }} - {{ client.email }} - {{ client.phone }} - {{ client.address }} - {{ client.ssn }} - {{ client.postalcode }} - {{ client.notes }} - {{ client.consultant_id }}
+            {{ client.id }} - 
+            {{ client.name }} - 
+            {{ client.email }} - 
+            {{ client.phone }} - 
+            {{ client.address }} - 
+            {{ client.ssn }} - 
+            {{ client.postalcode }} - 
+            {{ client.notes }} - 
+            {{ client.consultant.id if client.consultant else 'No Consultant Assigned' }}{% if not loop.last %}:{% endif %}{{client.consultant.fullname}}
         </li>
         {% else %}
         <li>No Clients available.</li>

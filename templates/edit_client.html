@@ -7,7 +7,15 @@
     <ul>
         {% for client in clients %}
         <li>
-            {{ client.id }} - {{ client.name }} - {{ client.email }} - {{ client.phone }} - {{ client.address }} - {{ client.ssn }} - {{ client.postalcode }} - {{ client.notes }} - {{ client.consultant_id }}
+            {{ client.id }} - 
+            {{ client.name }} - 
+            {{ client.email }} - 
+            {{ client.phone }} - 
+            {{ client.address }} - 
+            {{ client.ssn }} - 
+            {{ client.postalcode }} - 
+            {{ client.notes }} - 
+            {{ client.consultant.id if client.consultant else 'No Consultant Assigned' }}{% if not loop.last %}:{% endif %}{{client.consultant.fullname}}
             <a href="/clients/edit/form/{{ client.id }}">Edit</a>
             <form action="/clients/delete/{{ client.id }}" method="post" style="display:inline;">
                 <button type="submit" onclick="return confirm('Are you sure you want to delete this client?')">Delete</button>

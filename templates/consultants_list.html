@@ -7,7 +7,21 @@
     <ul>
         {% for consultant in consultants %}
         <li>
-            {{ consultant.id }} - {{ consultant.fullname }} - {{ consultant.username }} - {{ consultant.email }} - {{ consultant.phone }}
+            {{ consultant.id }} - 
+            {{ consultant.fullname }} - 
+            {{ consultant.username }} - 
+            {{ consultant.email }} - 
+            {{ consultant.phone }} - 
+            {% if consultant.clients %}
+                {% for client in consultant.clients%}{{ client.id }}:{{ client.name }}{% if not loop.last %}, {% endif %}{% endfor %}
+            {% else %}
+                No Clients
+            {% endif %} - 
+            {% if consultant.projects %}
+                {% for project in consultant.projects%}{{ project.id }}:{{ project.name }}{% if not loop.last %}, {% endif %}{% endfor %}
+            {% else %}
+                No Projects
+            {% endif %}
         </li>
         {% else %}
         <li>No Consultants available.</li>

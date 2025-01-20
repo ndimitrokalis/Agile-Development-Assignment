@@ -24,8 +24,17 @@
         <label for="postalcode">Postal Code:</label><br>
         <input type="text" id="postalcode" name="postalcode" placeholder="Postal Code" pattern="^\d{5}(-\d{4})?$" value="{{ client.postalcode }}" required><br><br>
 
-        <label for="consultant">Handled By:</label><br>
-        <input type="number" id="consultant" name="consultant" placeholder="Consultant's ID" value="{{ client.consultant_id }}" step="1"><br><br>
+        <label for="consultant">Assign Consultant:</label><br>
+        <select id="consultant" name="consultant">
+            {% for consultant in consultants %}
+                <option value="{{ consultant.id }}" 
+                    {% if consultant.id == client.consultant_id %}selected{% endif %}>
+                    {{ consultant.fullname }}
+                </option>
+            {% else %}
+                <option disabled>No consultants available</option>
+            {% endfor %}
+        </select><br><br>
 
         <h1> Edit Notes</h1>
 
@@ -36,7 +45,7 @@
     </form>
 
     <h2>Delete Client</h2>
-    <form method="post" action="/clients/delete/{{ client_id }}">
+    <form method="post" action="/clients/delete/{{ client.id }}">
         <button type="submit" onclick="return confirm('Are you sure you want to delete this client?')">Delete Client</button>
     </form>
 {% endblock %}

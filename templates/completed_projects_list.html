@@ -9,11 +9,14 @@
             <li>
                 {{completed_project.id }} - 
                 {{ completed_project.name }} - 
-                {{ completed_project.client_id }} - 
+                {{ completed_project.client_id }}:{{ completed_project.client.name }} - 
                 {{ completed_project.deadline}} - 
-                {{ completed_project.consultant_id }} - 
-                {{ completed_project.description }} - 
-                {{ completed_project.consultants if completed_project.consultants else "None" }}
+                {% if completed_project.consultants %}
+                    {% for consultant in completed_project.consultants %}{{ consultant.id }}:{{ consultant.fullname }}{% if not loop.last %}, {% endif %}{% endfor %}
+                {% else %}
+                    No Consultant Assigned
+                {% endif %} -
+                {{ completed_project.description }}
             </li>
             {% else %}
             <li>No Projects available.</li>

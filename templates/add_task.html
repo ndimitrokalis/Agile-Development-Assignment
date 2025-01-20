@@ -8,14 +8,13 @@
 
 <form method="post" id="task-form" action="/add/task">
 
-    <label for="task-project">Select Project:</label>
-    <select id="task-project" name="task-project" required>
-        <option value="project-alpha">Project A</option>
-        <option value="project-beta">Project B</option>
-        <option value="project-alpha">Project C</option>
-        <option value="project-beta">Project D</option>
-        <option value="project-alpha">Project E</option>
-        <option value="project-beta">Project F</option>
+    <label for="project">Select Project:</label>
+    <select id="project" name="project" required>
+        {% for project in projects %}
+            <option value="{{ project.id }}">{{ project.name }}</option>
+        {% else %}
+            <option disabled>No projects available</option>
+        {% endfor %}
     </select>
 
     <label for="task-name">Task Name:</label>
