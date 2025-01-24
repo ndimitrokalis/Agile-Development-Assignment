@@ -4,6 +4,7 @@ from sqlalchemy import CheckConstraint
 from flask_login import UserMixin, LoginManager, login_required, logout_user, login_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
+from sqlalchemy.sql import func, case
 
 app = Flask(__name__)
 
@@ -70,6 +71,7 @@ class Task(db.Model):
     consultant_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     description = db.Column(db.String(500), nullable=True)
     status = db.Column(db.String(20), default="To Do", nullable=False)
+    priority = db.Column(db.Integer, default=1, nullable=True)
     project = db.relationship('Project', back_populates='tasks')
     consultant = db.relationship('User', back_populates='tasks')
 
@@ -323,6 +325,7 @@ def edit_task(task_id):
         task.project_id = request.form.get('project-id')
         task.deadline = datetime.strptime(request.form.get('deadline'), '%Y-%m-%d').date() if request.form.get('deadline') else None
         task.consultant_id = request.form.get('consultant_id')
+        task.priority = request.form.get('priority')
         task.description = request.form.get('description')
         task.status = request.form.get('status')
         try:
@@ -348,7 +351,69 @@ def delete_task(task_id):
         return redirect(f'/projects/edit/{project_id}')
     except Exception as e:
         print(f"Error: {e}")
-        return "An error occurred while deleting the task", 500 
+        return "An error occurred while deleting the task", 500
+    
+@app.route("/dashboard/analytics")
+@login_required
+def analytics():
+    if current_user.role != 'admin':
+        return "Unauthorized", 403
+    task_counts = (
+        db.session.query(
+            Task.consultant_id.label('consultant_id'),
+            func.count(Task.id).label('total_tasks_count'),
+            func.count(case((Task.status == 'In Progress', 1))).label('in_progress_tasks_count'),
+            func.count(case((Task.status == 'Completed', 1))).label('completed_tasks_count'),
+        )
+        .group_by(Task.consultant_id)
+        .subquery()
+    )
+    client_counts = (
+        db.session.query(
+            Client.consultant_id.label('consultant_id'),
+            func.count(Client.id).label('client_count'),
+        )
+        .group_by(Client.consultant_id)
+        .subquery()
+    )
+    project_counts = (
+        db.session.query(
+            project_consultants.c.consultant_id.label('consultant_id'),
+            func.count(project_consultants.c.project_id).label('project_count'),
+        )
+        .group_by(project_consultants.c.consultant_id)
+        .subquery()
+    )
+    consultants = (
+        db.session.query(
+            User.id,
+            User.fullname,
+            func.coalesce(task_counts.c.total_tasks_count, 0).label('total_tasks_count'),
+            func.coalesce(task_counts.c.in_progress_tasks_count, 0).label('in_progress_tasks_count'),
+            func.coalesce(task_counts.c.completed_tasks_count, 0).label('completed_tasks_count'),
+            func.coalesce(client_counts.c.client_count, 0).label('client_count'),
+            func.coalesce(project_counts.c.project_count, 0).label('project_count'),
+        )
+        .outerjoin(task_counts, task_counts.c.consultant_id == User.id)
+        .outerjoin(client_counts, client_counts.c.consultant_id == User.id)
+        .outerjoin(project_counts, project_counts.c.consultant_id == User.id)
+        .filter(User.role == 'consultant')
+        .group_by(User.id)
+        .all()
+    )
+    consultants_with_stats = [
+        {
+            "id": row.id,
+            "fullname": row.fullname,
+            "total_tasks_count": row.total_tasks_count,
+            "in_progress_tasks_count": row.in_progress_tasks_count,
+            "completed_tasks_count": row.completed_tasks_count,
+            "client_count": row.client_count,
+            "project_count": row.project_count,
+        }
+        for row in consultants
+    ]
+    return render_template('analytics.html', consultant_stats=consultants_with_stats)
     
 @app.route("/clients/list")
 @login_required

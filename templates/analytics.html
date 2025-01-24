@@ -1,0 +1,42 @@
+{% extends 'dashboard.html' %}
+
+{% block title %}Analytics{% endblock %}
+
+{% block content %}
+    <h1>Consultant Analytics</h1>
+    <ul>
+        {% for consultant in consultant_stats|sort(attribute='completed_tasks_count', reverse=True) %}
+        <li>
+            {{ consultant.id }} - 
+            {{ consultant.fullname }} - 
+            {% if consultant.client_count %}
+                Clients: {{ consultant.client_count }}
+            {% else %}
+                No Clients
+            {% endif %} - 
+            {% if consultant.project_count %}
+                Projects: {{ consultant.project_count }}
+            {% else %}
+                No Projects
+            {% endif %} - 
+            {% if consultant.total_tasks_count %}
+                Total Tasks: {{ consultant.total_tasks_count }}
+            {% else %}
+                No Tasks
+            {% endif %} - 
+            {% if consultant.in_progress_tasks_count %}
+                In Progress: {{ consultant.in_progress_tasks_count }}
+            {% else %}
+                No In Progress Tasks
+            {% endif %} - 
+            {% if consultant.completed_tasks_count %}
+                Completed Tasks: {{ consultant.completed_tasks_count }}
+            {% else %}
+                No Completed Tasks
+            {% endif %}
+        </li>
+        {% else %}
+        <li>No Consultants available.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

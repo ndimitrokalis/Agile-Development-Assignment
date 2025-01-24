@@ -56,13 +56,14 @@
 
 <h1>TASKS </h1>
 <ul>
-    {% for task in tasks %}
+    {% for task in tasks|sort(attribute='priority', reverse=True) %}
     <li>
         {{ task.id }} - 
         {{ task.name }} - 
         {{ task.deadline if task.deadline else "No Deadline Set" }} - 
         {{ task.consultant_id if task.consultant_id else "No Consultant Assigned" }}:{{ task.consultant.fullname }} - 
         {{ task.description }} - 
+        {{ task.priority }} -
         {{ task.status }}
         <a href="/projects/tasks/edit/{{ task.id }}">Edit</a>
         <form action="/projects/tasks/delete/{{ task.id }}" method="post" style="display:inline;">
